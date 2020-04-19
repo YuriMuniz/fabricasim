@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import axios from 'axios';
-
 import jwt from 'jsonwebtoken';
+import authConfig from '../../config/auth';
 
 class SessionController {
     async store(req, res) {
@@ -9,7 +9,7 @@ class SessionController {
 
         const instance = await axios.create({
             baseURL: process.env.APP_URL_API,
-            timeout: 1000,
+            timeout: 2000,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -18,6 +18,11 @@ class SessionController {
         const user = await instance
             .post('/angular/login', { userName, password })
             .catch((error) => {
+                if (error.response === undefined) {
+                    return res
+                        .status(403)
+                        .json({ error: 'User or password don´t match.' });
+                }
                 if (error.response.status === 403) {
                     return res
                         .status(401)
@@ -46,16 +51,10 @@ class SessionController {
                 state,
                 roles,
             },
-            token: jwt.sign({ id }, process.env.APP_SECRET, {
-                expiresIn: '7d',
+            token: jwt.sign({ id }, authConfig.secret, {
+                expiresIn: authConfig.expiresIn,
             }),
         });
-
-        // const user = await User.findOne({ where: { email } });
-
-        // if (!user) {
-        //     return res.status(401).json({ error: 'User not found' });
-        // }
     }
 }
 

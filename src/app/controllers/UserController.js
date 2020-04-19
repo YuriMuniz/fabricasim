@@ -15,7 +15,7 @@ class UserController {
 
         const instance = await axios.create({
             baseURL: process.env.APP_URL_API,
-            timeout: 1000,
+            timeout: 2000,
             headers: {
                 'Content-Type': 'application/json',
             },

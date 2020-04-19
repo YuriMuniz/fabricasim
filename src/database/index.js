@@ -1,15 +1,35 @@
-// import Sequelize from 'sequelize';
+import Sequelize from 'sequelize';
 
-// import databaseConfig from '../config/database';
+import UserProfiles from '../app/models/UserProfiles';
 
-// class Database {
-//     constructor() {
-//         this.init();
-//     }
+import ApplicationUsers from '../app/models/ApplicationUsers';
 
-//     init() {
-//         this.connection = new Sequelize();
-//     }
-// }
+import databaseConfig from '../config/database';
+import IdentityUserRoles from '../app/models/IdentityUserRoles';
+import IdentityRoles from '../app/models/IdentityRoles';
 
-// export default new Database();
+const models = [
+    UserProfiles,
+    ApplicationUsers,
+    IdentityUserRoles,
+    IdentityRoles,
+];
+
+class Database {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.connection = new Sequelize(databaseConfig);
+
+        models
+            .map((model) => model.init(this.connection))
+            .map(
+                (model) =>
+                    model.associate && model.associate(this.connection.models)
+            );
+    }
+}
+
+export default new Database();
