@@ -12,7 +12,7 @@ const routes = new Router();
 routes.post('/sessions', SessionController.store);
 routes.post('/users', UserController.store);
 
-// Middlerare
+// Middleware
 routes.use(authMiddleware);
 
 // Rotas que precisam de autenticação
