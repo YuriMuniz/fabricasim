@@ -169,7 +169,9 @@ class UserRoleController {
                 .json({ error: 'Student user does not have permission.' });
         }
 
-        return res.json(user);
+        return res.json({
+            message: 'User does not have any compatible roles.',
+        });
     }
 }
 
