@@ -43,7 +43,7 @@ class UserRoleController {
             idRoles.push(2, 3);
         }
         if (values.includes('ADMIN')) {
-            idRoles.push(2);
+            idRoles.push(2, 3);
         }
         if (values.includes('ADMIN+')) {
             idRoles.push(1, 2, 3);
