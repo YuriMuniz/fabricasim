@@ -20,6 +20,12 @@ class ApplicationUsers extends Model {
             foreignKey: 'userProfileId',
             as: 'userProfile',
         });
+        this.belongsToMany(models.IdentityRoles, {
+            through: 'IdentityUserRoles',
+            as: 'roles',
+            foreignKey: 'userId',
+            otherKey: 'roleId',
+        });
     }
 }
 
