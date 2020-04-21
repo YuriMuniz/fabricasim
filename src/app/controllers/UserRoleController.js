@@ -3,6 +3,8 @@ import ApplicationUsers from '../models/ApplicationUsers';
 import UserProfiles from '../models/UserProfiles';
 import IdentityRoles from '../models/IdentityRoles';
 
+import IdentityUserRoles from '../models/IdentityUserRoles';
+
 class UserRoleController {
     async index(req, res) {
         const { email } = req.body;
@@ -40,22 +42,28 @@ class UserRoleController {
             idRoles.push(0);
         }
         if (values.includes('TEACHER')) {
-            idRoles.push(2, 3);
+            idRoles.length = 0;
+            idRoles.push(0);
         }
+
         if (values.includes('ADMIN')) {
+            idRoles.length = 0;
             idRoles.push(2, 3);
         }
         if (values.includes('ADMIN+')) {
+            idRoles.length = 0;
             idRoles.push(1, 2, 3);
         }
+
         if (values.includes('SUPER')) {
+            idRoles.length = 0;
             idRoles.push(1, 2, 3, 6);
         }
 
         if (idRoles.includes(0)) {
-            return res
-                .status(403)
-                .json({ error: 'Student user does not have permission.' });
+            return res.status(403).json({
+                error: 'Student or teacher user does not have permission.',
+            });
         }
 
         if (idRoles.length === 0) {
@@ -90,6 +98,28 @@ class UserRoleController {
         });
 
         return res.json(users);
+    }
+
+    async store(req, res) {
+        const { userId, roles } = req.body;
+
+        await IdentityUserRoles.destroy({
+            where: {
+                userId,
+            },
+        });
+
+        const userRole = {
+            userId,
+            roleId: 0,
+        };
+
+        await roles.forEach(async (role) => {
+            userRole.roleId = role.id;
+            await IdentityUserRoles.create(userRole);
+        });
+
+        return res.json({ roles });
     }
 }
 

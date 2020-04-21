@@ -18,5 +18,6 @@ routes.use(authMiddleware);
 // Rotas que precisam de autenticação
 
 routes.get('/user-role', UserRoleController.index);
+routes.post('/user-role', UserRoleController.store);
 
 export default routes;
