@@ -5,7 +5,10 @@ class UserProfiles extends Model {
         super.init(
             {
                 userFirstName: Sequelize.STRING,
+                userOccupation: Sequelize.STRING,
+                userCellNumber: Sequelize.STRING,
                 userCountry: Sequelize.STRING,
+                userState: Sequelize.STRING,
             },
             {
                 sequelize,

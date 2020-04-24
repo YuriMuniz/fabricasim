@@ -3,11 +3,8 @@ import ApplicationUsers from '../models/ApplicationUsers';
 import UserProfiles from '../models/UserProfiles';
 import IdentityRoles from '../models/IdentityRoles';
 
-import IdentityUserRoles from '../models/IdentityUserRoles';
-
-class UserRoleController {
-    async index(req, res) {
-        console.log(req);
+class UserFilterController {
+    async store(req, res) {
         const { email } = req.body;
 
         const user = await ApplicationUsers.findOne({
@@ -100,28 +97,6 @@ class UserRoleController {
 
         return res.json(users);
     }
-
-    async store(req, res) {
-        const { userId, roles } = req.body;
-
-        await IdentityUserRoles.destroy({
-            where: {
-                userId,
-            },
-        });
-
-        const userRole = {
-            userId,
-            roleId: 0,
-        };
-
-        await roles.forEach(async (role) => {
-            userRole.roleId = role.id;
-            await IdentityUserRoles.create(userRole);
-        });
-
-        return res.json({ roles });
-    }
 }
 
-export default new UserRoleController();
+export default new UserFilterController();
