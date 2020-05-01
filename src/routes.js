@@ -6,7 +6,15 @@ import ApplicationUsersController from './app/controllers/ApplicationUsersContro
 import UserRoleController from './app/controllers/UserRoleController';
 
 import UserFilterController from './app/controllers/UserFilterController';
-import authMiddleware from './app/middlewares/auth';
+// import authMiddleware from './app/middlewares/auth';
+import authorize from './app/middlewares/authorize';
+import GroupController from './app/controllers/GroupController';
+import UserGroupsController from './app/controllers/UserGroupsController';
+import UserCourseController from './app/controllers/UserCourseController';
+import CourseGroupsController from './app/controllers/CourseGroupsController';
+import UserGroupCourseController from './app/controllers/UserGroupCourseController';
+
+import roles from './app/util/roles';
 
 const routes = new Router();
 
@@ -16,17 +24,71 @@ routes.post('/sessions', SessionController.store);
 routes.post('/users', UserController.store);
 
 // Middleware
-routes.use(authMiddleware);
+// routes.use(authMiddleware);
 
 // Rotas que precisam de autenticação
 
-routes.put('/users', UserController.update);
+routes.put('/users', authorize(), UserController.update);
 
-routes.get('/application-users', ApplicationUsersController.index);
+routes.get('/application-users', authorize(), ApplicationUsersController.index);
 
-routes.get('/user-role', UserRoleController.index);
-routes.post('/user-role', UserRoleController.store);
+routes.get(
+    '/user-role',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserRoleController.index
+);
+routes.post(
+    '/user-role',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserRoleController.store
+);
 
-routes.post('/user-filter', UserFilterController.store);
+routes.post(
+    '/user-filter',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserFilterController.store
+);
+
+routes.post(
+    '/group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    GroupController.store
+);
+
+routes.get(
+    '/group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    GroupController.index
+);
+
+routes.put(
+    '/group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    GroupController.update
+);
+
+routes.post(
+    '/user-group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserGroupsController.store
+);
+
+routes.get(
+    '/user-course',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserCourseController.index
+);
+
+routes.post(
+    '/course-group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    CourseGroupsController.store
+);
+
+routes.post(
+    '/user-group-course',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserGroupCourseController.store
+);
 
 export default routes;

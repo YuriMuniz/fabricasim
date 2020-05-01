@@ -7,7 +7,6 @@ import IdentityUserRoles from '../models/IdentityUserRoles';
 
 class UserRoleController {
     async index(req, res) {
-        console.log(req.body);
         const { email } = req.body;
 
         const user = await ApplicationUsers.findOne({

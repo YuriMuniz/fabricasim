@@ -7,12 +7,23 @@ import ApplicationUsers from '../app/models/ApplicationUsers';
 import databaseConfig from '../config/database';
 import IdentityUserRoles from '../app/models/IdentityUserRoles';
 import IdentityRoles from '../app/models/IdentityRoles';
+import Groups from '../app/models/Groups';
+import Courses from '../app/models/Courses';
+
+import CourseGroups from '../app/models/CourseGroups';
+import UserGroups from '../app/models/UserGroups';
+import UserCourses from '../app/models/UserCourses';
 
 const models = [
     UserProfiles,
     ApplicationUsers,
     IdentityUserRoles,
     IdentityRoles,
+    Groups,
+    Courses,
+    CourseGroups,
+    UserGroups,
+    UserCourses,
 ];
 
 class Database {
