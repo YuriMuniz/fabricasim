@@ -13,7 +13,12 @@ class App {
 
     middlewares() {
         this.server.use(cors());
-        // this.server.use(cors({ origin: 'https:www.fabricaportal.com.br'}));
+        this.server.use(
+            cors({
+                origin:
+                    'https://5eb1a979ba678000060445e6--romantic-swanson-d346aa.netlify.app/',
+            })
+        );
         this.server.use(express.json());
     }
 
