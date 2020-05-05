@@ -15,7 +15,7 @@ class App {
         this.server.use(cors());
         this.server.use(
             cors({
-                origin: 'https://romantic-swanson-d346aa.netlify.app/',
+                origin: 'https://romantic-swanson-d346aa.netlify.app',
             })
         );
         this.server.use(express.json());
