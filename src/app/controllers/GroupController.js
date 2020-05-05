@@ -13,6 +13,7 @@ class GroupController {
                 groupOwner_Id: req.userId,
                 isActive,
             },
+            order: [['timestamp', 'DESC']],
             include: [
                 {
                     model: UserProfiles,
@@ -111,7 +112,14 @@ class GroupController {
         group.groupDescription = groupDescription;
         group.groupResume = groupResume;
 
-        await group.update(group);
+        try {
+            await group.update({
+                groupDescription,
+                groupResume,
+            });
+        } catch (err) {
+            return res.status(401).json({ message: err });
+        }
 
         return res.json(group);
     }

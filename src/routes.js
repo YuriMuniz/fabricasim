@@ -13,6 +13,10 @@ import UserGroupsController from './app/controllers/UserGroupsController';
 import UserCourseController from './app/controllers/UserCourseController';
 import CourseGroupsController from './app/controllers/CourseGroupsController';
 import UserGroupCourseController from './app/controllers/UserGroupCourseController';
+import CoursesController from './app/controllers/CoursesController';
+import GroupFilterController from './app/controllers/GroupFilterController';
+
+import UserProfilesController from './app/controllers/UserProfilesController';
 
 import roles from './app/util/roles';
 
@@ -74,6 +78,12 @@ routes.post(
 );
 
 routes.get(
+    '/user-group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserGroupsController.index
+);
+
+routes.get(
     '/user-course',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     UserCourseController.index
@@ -89,6 +99,24 @@ routes.post(
     '/user-group-course',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     UserGroupCourseController.store
+);
+
+routes.get(
+    '/courses',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    CoursesController.index
+);
+
+routes.get(
+    '/user-profiles',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserProfilesController.index
+);
+
+routes.post(
+    '/group-filter',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    GroupFilterController.store
 );
 
 export default routes;

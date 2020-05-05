@@ -10,7 +10,7 @@ class UserGroupCourseController {
     async store(req, res) {
         const { name, email, cellNumber, country, state, idGroup } = req.body;
 
-        const [password] = email.split('@');
+        const password = email;
 
         console.log(password);
 
@@ -47,43 +47,49 @@ class UserGroupCourseController {
             },
         });
 
-        console.log(user);
-        console.log(user.userProfileId);
+        try {
+            const userGroup = {
+                group_Id: idGroup,
+                userProfile_Id: user.userProfileId,
+                isActive: true,
+                timestamp: Sequelize.fn('GETDATE'),
+            };
 
-        const userGroup = {
-            group_Id: idGroup,
-            userProfile_Id: user.userProfileId,
-            isActive: true,
-            timestamp: Sequelize.fn('GETDATE'),
-        };
-
-        await UserGroups.create(userGroup);
-
-        const groupCourses = await CourseGroups.findAll({
-            where: {
-                group_id: idGroup,
-            },
-        });
-        const idCourses = [];
-
-        for (let x = 0; x < groupCourses.length; x++) {
-            idCourses.push({
-                id: groupCourses[x].course_id,
-            });
+            await UserGroups.create(userGroup);
+        } catch (err) {
+            return res.status(401).json({ message: err });
         }
 
-        const userCourse = {
-            course_Id: 0,
-            userProfile_Id: user.userProfileId,
-            isActive: true,
-            wasAccepted: true,
-            timestamp: Sequelize.fn('GETDATE'),
-        };
+        try {
+            const groupCourses = await CourseGroups.findAll({
+                where: {
+                    group_id: idGroup,
+                },
+            });
+            const idCourses = [];
 
-        await idCourses.forEach(async (course) => {
-            userCourse.course_Id = course.id;
-            await UserCourses.create(userCourse);
-        });
+            for (let x = 0; x < groupCourses.length; x++) {
+                idCourses.push({
+                    id: groupCourses[x].course_id,
+                });
+            }
+
+            const userCourse = {
+                course_Id: 0,
+                userProfile_Id: user.userProfileId,
+                isActive: true,
+                wasAccepted: true,
+                timestamp: Sequelize.fn('GETDATE'),
+            };
+
+            await idCourses.forEach(async (course) => {
+                userCourse.course_Id = course.id;
+                await UserCourses.create(userCourse);
+            });
+        } catch (err) {
+            return res.status(401).json({ message: err });
+        }
+
         return res.json(user);
     }
 }

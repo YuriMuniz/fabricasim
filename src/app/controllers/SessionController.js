@@ -37,7 +37,7 @@ class SessionController {
 
         const {
             id,
-            userFirstName,
+            userfirstName,
             userOccupation,
             userCellNumber,
             userCountry,
@@ -48,7 +48,7 @@ class SessionController {
             user: {
                 id,
                 email,
-                name: userFirstName,
+                name: userfirstName,
                 occupation: userOccupation,
                 cellNumber: userCellNumber,
                 country: userCountry,

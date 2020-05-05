@@ -93,6 +93,34 @@ class UserGroupsController {
 
         return res.json(group);
     }
+
+    async index(req, res) {
+        const { id } = req.query;
+
+        const group = await Groups.findOne({
+            where: {
+                id,
+            },
+            include: [
+                {
+                    model: UserProfiles,
+                    as: 'users',
+                    through: {
+                        attributes: [],
+                    },
+                },
+                {
+                    model: Courses,
+                    as: 'courses',
+                    through: {
+                        attributes: [],
+                    },
+                },
+            ],
+        });
+
+        return res.json(group);
+    }
 }
 
 export default new UserGroupsController();
