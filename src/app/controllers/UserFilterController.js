@@ -5,7 +5,7 @@ import IdentityRoles from '../models/IdentityRoles';
 
 class UserFilterController {
     async store(req, res) {
-        const { email } = req.body;
+        const { email, index } = req.body;
 
         const user = await ApplicationUsers.findOne({
             where: {
@@ -110,7 +110,7 @@ class UserFilterController {
             }
         });
 
-        return res.json(usersFilter);
+        return res.json({ usersFilter, index });
     }
 }
 
