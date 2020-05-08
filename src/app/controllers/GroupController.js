@@ -83,6 +83,10 @@ class GroupController {
                 include: [
                     {
                         model: UserProfiles,
+                        as: 'groupOwner',
+                    },
+                    {
+                        model: UserProfiles,
                         as: 'users',
                         through: {
                             attributes: [],
