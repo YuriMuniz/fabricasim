@@ -3,38 +3,107 @@ import Groups from '../models/Groups';
 import Courses from '../models/Courses';
 import UserProfiles from '../models/UserProfiles';
 import CourseGroups from '../models/CourseGroups';
+import ApplicationUsers from '../models/ApplicationUsers';
+import IdentityRoles from '../models/IdentityRoles';
 
 class GroupController {
     async index(req, res) {
-        const isActive = true;
-
-        const groups = await Groups.findAll({
+        const user = await ApplicationUsers.findOne({
             where: {
-                groupOwner_Id: req.userId,
-                isActive,
+                userProfileId: req.userId,
             },
-            order: [['timestamp', 'DESC']],
+
+            attributes: ['id', 'userName'],
             include: [
                 {
                     model: UserProfiles,
-                    as: 'users',
-                    through: {
-                        attributes: [],
-                    },
+                    as: 'userProfile',
+                    attributes: ['id', 'userFirstName'],
                 },
                 {
-                    model: Courses,
-                    as: 'courses',
+                    model: IdentityRoles,
+                    as: 'roles',
+                    attributes: ['id', 'name'],
                     through: {
                         attributes: [],
                     },
                 },
             ],
         });
+        const isActive = true;
 
-        return res.json({
-            groups,
-        });
+        console.log(user.roles);
+        const authorizateAdminMore = user.roles.some((e) =>
+            ['SUPER', 'ADMIN+'].includes(e.name)
+        );
+        const authorizateAdmin = user.roles.some((e) =>
+            ['ADMIN'].includes(e.name)
+        );
+
+        if (authorizateAdminMore) {
+            const groups = await Groups.findAll({
+                where: {
+                    isActive,
+                },
+                order: [['timestamp', 'DESC']],
+                include: [
+                    {
+                        model: UserProfiles,
+                        as: 'groupOwner',
+                    },
+                    {
+                        model: UserProfiles,
+                        as: 'users',
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                    {
+                        model: Courses,
+                        as: 'courses',
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                ],
+            });
+
+            return res.json({
+                groups,
+            });
+        }
+
+        if (authorizateAdmin) {
+            const groups = await Groups.findAll({
+                where: {
+                    groupOwner_Id: req.userId,
+                    isActive,
+                },
+                order: [['timestamp', 'DESC']],
+                include: [
+                    {
+                        model: UserProfiles,
+                        as: 'users',
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                    {
+                        model: Courses,
+                        as: 'courses',
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                ],
+            });
+
+            return res.json({
+                groups,
+            });
+        }
+
+        return res.status(403).json({ message: 'Unauthorized' });
     }
 
     async store(req, res) {
