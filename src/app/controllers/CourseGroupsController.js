@@ -10,6 +10,12 @@ class CourseGroupsController {
     async store(req, res) {
         const { idGroup, idCourses } = req.body;
 
+        const oldCoursesGroup = await CourseGroups.findAll({
+            where: {
+                group_id: idGroup,
+            },
+        });
+
         if (idCourses !== undefined) {
             await CourseGroups.destroy({
                 where: {
@@ -40,11 +46,20 @@ class CourseGroupsController {
                 });
             }
 
+            const oldCourses = oldCoursesGroup.filter(
+                (cg) => !idCourses.includes(cg.course_id)
+            );
+
+            console.log(oldCourses);
+
             await idUsers.forEach(async (user) => {
-                await UserCourses.destroy({
-                    where: {
-                        userProfile_Id: user.id,
-                    },
+                await oldCourses.forEach(async (course) => {
+                    await UserCourses.destroy({
+                        where: {
+                            userProfile_Id: user.id,
+                            course_id: course.course_id,
+                        },
+                    });
                 });
 
                 const userCourse = {

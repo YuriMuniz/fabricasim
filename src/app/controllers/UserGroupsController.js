@@ -10,6 +10,12 @@ class UserGroupsController {
     async store(req, res) {
         const { idGroup, idUsers } = req.body;
 
+        const oldUsersGroup = await UserGroups.findAll({
+            where: {
+                group_id: idGroup,
+            },
+        });
+
         if (idUsers !== undefined) {
             await UserGroups.destroy({
                 where: {
@@ -41,14 +47,29 @@ class UserGroupsController {
                     id: groupCourses[x].course_id,
                 });
             }
+            // const oldCourses = groupCourses.filter((cg) =>
+            //     idCourses.includes(cg.course_id)
+            // );
+
+            const oldUsers = oldUsersGroup.filter(
+                (ug) => !idUsers.includes(ug.userProfile_Id)
+            );
+
+            console.log(oldUsers);
+
+            await oldUsers.forEach(async (user) => {
+                await idCourses.forEach(async (course) => {
+                    await UserCourses.destroy({
+                        where: {
+                            userProfile_Id: user.userProfile_Id,
+                            course_id: course.id,
+                        },
+                    });
+                });
+            });
+
             console.log(idCourses);
             await idUsers.forEach(async (user) => {
-                await UserCourses.destroy({
-                    where: {
-                        userProfile_Id: user.id,
-                    },
-                });
-
                 const userCourse = {
                     course_Id: 0,
                     userProfile_Id: user.id,
