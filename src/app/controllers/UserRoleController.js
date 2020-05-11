@@ -48,14 +48,14 @@ class UserRoleController {
         }
 
         if (values.includes('ADMIN')) {
-            if (!values.includes('ADMIN+') || !values.includes('SUPER')) {
+            if (!values.some((e) => ['SUPER', 'ADMIN+'].includes(e))) {
                 idRoles.length = 0;
                 idRoles.push(2, 3);
                 idRolesNot.push('0', '1', '6');
             }
         }
         if (values.includes('ADMIN+')) {
-            if (!values.includes('SUPER')) {
+            if (!values.some((e) => ['SUPER'].includes(e))) {
                 idRoles.length = 0;
                 idRoles.push(1, 2, 3);
                 idRolesNot.push('0', '6');
