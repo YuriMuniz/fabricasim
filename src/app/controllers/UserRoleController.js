@@ -48,14 +48,18 @@ class UserRoleController {
         }
 
         if (values.includes('ADMIN')) {
-            idRoles.length = 0;
-            idRoles.push(2, 3);
-            idRolesNot.push('0', '1', '6');
+            if (!values.includes('ADMIN+') || !values.includes('SUPER')) {
+                idRoles.length = 0;
+                idRoles.push(2, 3);
+                idRolesNot.push('0', '1', '6');
+            }
         }
         if (values.includes('ADMIN+')) {
-            idRoles.length = 0;
-            idRoles.push(1, 2, 3);
-            idRolesNot.push('0', '6');
+            if (!values.includes('SUPER')) {
+                idRoles.length = 0;
+                idRoles.push(1, 2, 3);
+                idRolesNot.push('0', '6');
+            }
         }
 
         if (values.includes('SUPER')) {
