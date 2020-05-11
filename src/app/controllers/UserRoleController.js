@@ -290,6 +290,12 @@ class UserRoleController {
         });
 
         newRoles.push({ id: 3 });
+        if (
+            newRoles.some((e) => e.id === 6) &&
+            !newRoles.some((e) => e.id === 1)
+        ) {
+            newRoles.push({ id: 1 });
+        }
 
         const userRole = {
             userId,
