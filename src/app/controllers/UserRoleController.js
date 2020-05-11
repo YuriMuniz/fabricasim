@@ -170,27 +170,39 @@ class UserRoleController {
                 ['ADMIN', 'ADMIN+', 'SUPER'].includes(e.name)
             )
         ) {
-            return res.status(403).json({ error: 'You don´t have permission' });
+            if (!user.roles.some((e) => ['ADMIN+', 'SUPER'].includes(e.name))) {
+                return res
+                    .status(403)
+                    .json({ error: 'You don´t have permission1' });
+            }
         }
         if (
             user.roles.some((e) => ['ADMIN+'].includes(e.name)) &&
             userRequest.roles.some((e) => ['ADMIN+', 'SUPER'].includes(e.name))
         ) {
-            return res.status(403).json({ error: 'You don´t have permission' });
+            if (!user.roles.some((e) => ['SUPER'].includes(e.name))) {
+                return res
+                    .status(403)
+                    .json({ error: 'You don´t have permission2' });
+            }
         }
 
         if (
             user.roles.some((e) => ['STUDENT'].includes(e.name)) &&
             user.roles.length === 1
         ) {
-            return res.status(403).json({ error: 'You don´t have permission' });
+            return res
+                .status(403)
+                .json({ error: 'You don´t have permission3' });
         }
 
         if (
             user.roles.every((e) => ['STUDENT', 'TEACHER'].includes(e.name)) &&
             user.roles.length === 2
         ) {
-            return res.status(403).json({ error: 'You don´t have permission' });
+            return res
+                .status(403)
+                .json({ error: 'You don´t have permission4' });
         }
 
         //---------------------------------------------------------------------------
@@ -199,14 +211,21 @@ class UserRoleController {
             user.roles.some((e) => ['ADMIN'].includes(e.name)) &&
             roles.some((e) => [1, 6, 0].includes(e.id))
         ) {
-            return res.status(403).json({ error: 'You don´t have permission' });
+            if (!user.roles.some((e) => ['ADMIN+', 'SUPER'].includes(e.name)))
+                return res
+                    .status(403)
+                    .json({ error: 'You don´t have permission5' });
         }
 
         if (
             user.roles.some((e) => ['ADMIN+'].includes(e.name)) &&
             roles.some((e) => [6, 0].includes(e.id))
         ) {
-            return res.status(403).json({ error: 'You don´t have permission' });
+            if (!user.roles.some((e) => ['SUPER'].includes(e.name))) {
+                return res
+                    .status(403)
+                    .json({ error: 'You don´t have permission6' });
+            }
         }
 
         const newRoles = roles.filter(function (e, i) {
