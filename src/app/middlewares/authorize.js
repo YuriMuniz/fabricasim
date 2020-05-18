@@ -32,7 +32,7 @@ export default function authorize(roles = []) {
                     token,
                     authConfig.secret
                 );
-
+                console.log(decoded.foo);
                 req.userId = decoded.id;
 
                 const user = await ApplicationUsers.findOne({

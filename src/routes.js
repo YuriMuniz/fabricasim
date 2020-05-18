@@ -15,10 +15,12 @@ import CourseGroupsController from './app/controllers/CourseGroupsController';
 import UserGroupCourseController from './app/controllers/UserGroupCourseController';
 import CoursesController from './app/controllers/CoursesController';
 import GroupFilterController from './app/controllers/GroupFilterController';
+import GroupRoleUserGroupsController from './app/controllers/GroupRoleUserGroupsController';
 
 import UserProfilesController from './app/controllers/UserProfilesController';
 
 import roles from './app/util/roles';
+// import GroupRoleUserGroupsController from './app/controllers/GroupRoleUserGroupsController';
 
 const routes = new Router();
 
@@ -117,6 +119,12 @@ routes.post(
     '/group-filter',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     GroupFilterController.store
+);
+
+routes.get(
+    '/group-role-user-groups',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    GroupRoleUserGroupsController.index
 );
 
 export default routes;

@@ -5,6 +5,7 @@ import UserGroups from '../models/UserGroups';
 import UserCourses from '../models/UserCourses';
 import Groups from '../models/Groups';
 import Courses from '../models/Courses';
+import GroupRoleUserGroups from '../models/GroupRoleUserGroups';
 
 class UserGroupsController {
     async store(req, res) {
@@ -55,8 +56,6 @@ class UserGroupsController {
                 (ug) => !idUsers.includes(ug.userProfile_Id)
             );
 
-            console.log(oldUsers);
-
             await oldUsers.forEach(async (user) => {
                 await idCourses.forEach(async (course) => {
                     await UserCourses.destroy({
@@ -68,7 +67,7 @@ class UserGroupsController {
                 });
             });
 
-            console.log(idCourses);
+            // console.log(idCourses);
             await idUsers.forEach(async (user) => {
                 const userCourse = {
                     course_Id: 0,
@@ -88,6 +87,69 @@ class UserGroupsController {
                 .status(400)
                 .json({ message: 'Bad request. User is required.' });
         }
+
+        // await idUsers.forEach(async (user) => {
+        //     const userGroups = await UserGroups.findAll({
+        //         where: {
+        //             userProfile_Id: user.id,
+        //             group_Id: idGroup,
+        //         },
+        //         attributes: ['id'],
+        //     });
+
+        //     console.log(userGroups);
+        //     await userGroups.forEach(async (ug) => {
+        //         await GroupRoleUserGroups.destroy({
+        //             where: {
+        //                 userGroup_Id: ug.id,
+        //             },
+        //         });
+        //     });
+        // });
+
+        const userGroups = await UserGroups.findAll({
+            where: {
+                group_Id: idGroup,
+            },
+            attributes: ['id'],
+        });
+
+        console.log(userGroups);
+        await userGroups.forEach(async (ug) => {
+            await GroupRoleUserGroups.destroy({
+                where: {
+                    userGroup_Id: ug.id,
+                },
+            });
+        });
+
+        const groupUserRole = {
+            groupRole_Id: 3,
+            userGroup_Id: 0,
+        };
+        await userGroups.forEach(async (ug) => {
+            groupUserRole.userGroup_Id = ug.id;
+            await GroupRoleUserGroups.create(groupUserRole);
+        });
+
+        // await idUsers.forEach(async (user) => {
+        //     const userGroups = await UserGroups.findAll({
+        //         where: {
+        //             userProfile_Id: user.id,
+        //             group_Id: idGroup,
+        //         },
+        //         attributes: ['id'],
+        //     });
+
+        //     const groupUserRole = {
+        //         groupRole_Id: 3,
+        //         userGroup_Id: 0,
+        //     };
+        //     await userGroups.forEach(async (ug) => {
+        //         groupUserRole.userGroup_Id = ug.id;
+        //         await GroupRoleUserGroups.create(groupUserRole);
+        //     });
+        // });
 
         const group = await Groups.findOne({
             where: {

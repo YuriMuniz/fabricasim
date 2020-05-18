@@ -13,6 +13,8 @@ import Courses from '../app/models/Courses';
 import CourseGroups from '../app/models/CourseGroups';
 import UserGroups from '../app/models/UserGroups';
 import UserCourses from '../app/models/UserCourses';
+import GroupRoleUserGroups from '../app/models/GroupRoleUserGroups';
+import GroupRoles from '../app/models/GroupRoles';
 
 const models = [
     UserProfiles,
@@ -24,6 +26,8 @@ const models = [
     CourseGroups,
     UserGroups,
     UserCourses,
+    GroupRoles,
+    GroupRoleUserGroups,
 ];
 
 class Database {

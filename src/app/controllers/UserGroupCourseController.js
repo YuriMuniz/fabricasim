@@ -5,6 +5,7 @@ import CourseGroups from '../models/CourseGroups';
 import UserCourses from '../models/UserCourses';
 // import UserProfiles from '../models/UserProfiles';
 import ApplicationUsers from '../models/ApplicationUsers';
+import GroupRoleUserGroups from '../models/GroupRoleUserGroups';
 
 class UserGroupCourseController {
     async store(req, res) {
@@ -89,6 +90,23 @@ class UserGroupCourseController {
         } catch (err) {
             return res.status(401).json({ message: err });
         }
+
+        const userGroups = await UserGroups.findAll({
+            where: {
+                userProfile_Id: user.userProfileId,
+                group_Id: idGroup,
+            },
+            attributes: ['id'],
+        });
+
+        const groupUserRole = {
+            groupRole_Id: 3,
+            userGroup_Id: 0,
+        };
+        await userGroups.forEach(async (ug) => {
+            groupUserRole.userGroup_Id = ug.id;
+            await GroupRoleUserGroups.create(groupUserRole);
+        });
 
         return res.json(user);
     }
