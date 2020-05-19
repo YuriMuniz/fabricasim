@@ -16,6 +16,7 @@ import UserGroupCourseController from './app/controllers/UserGroupCourseControll
 import CoursesController from './app/controllers/CoursesController';
 import GroupFilterController from './app/controllers/GroupFilterController';
 import GroupRoleUserGroupsController from './app/controllers/GroupRoleUserGroupsController';
+import FabricoinController from './app/controllers/FabricoinController';
 
 import UserProfilesController from './app/controllers/UserProfilesController';
 
@@ -125,6 +126,18 @@ routes.get(
     '/group-role-user-groups',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     GroupRoleUserGroupsController.index
+);
+
+routes.post(
+    '/add-fabricoin-user',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    FabricoinController.storeFabricoinInUser
+);
+
+routes.post(
+    '/add-fabricoin-users-group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    FabricoinController.storeFabricoinInUsersOfGroup
 );
 
 export default routes;

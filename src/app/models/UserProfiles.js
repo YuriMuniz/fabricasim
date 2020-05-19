@@ -9,6 +9,7 @@ class UserProfiles extends Model {
                 userCellNumber: Sequelize.STRING,
                 userCountry: Sequelize.STRING,
                 userState: Sequelize.STRING,
+                fabricoinBalance: Sequelize.DECIMAL,
             },
             {
                 sequelize,

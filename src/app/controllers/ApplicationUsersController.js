@@ -16,7 +16,7 @@ class ApplicationUsersController {
                 {
                     model: UserProfiles,
                     as: 'userProfile',
-                    attributes: ['id', 'userFirstName'],
+                    attributes: ['id', 'userFirstName', 'fabricoinBalance'],
                 },
                 {
                     model: IdentityRoles,

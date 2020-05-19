@@ -16,6 +16,9 @@ import UserCourses from '../app/models/UserCourses';
 import GroupRoleUserGroups from '../app/models/GroupRoleUserGroups';
 import GroupRoles from '../app/models/GroupRoles';
 
+import FabricoinGiftPortalRecords from '../app/models/FabricoinGiftPortalRecords';
+import FabricoinFlowPortalRecords from '../app/models/FabricoinFlowPortalRecords';
+
 const models = [
     UserProfiles,
     ApplicationUsers,
@@ -28,6 +31,8 @@ const models = [
     UserCourses,
     GroupRoles,
     GroupRoleUserGroups,
+    FabricoinGiftPortalRecords,
+    FabricoinFlowPortalRecords,
 ];
 
 class Database {

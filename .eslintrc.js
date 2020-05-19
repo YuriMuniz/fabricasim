@@ -27,5 +27,6 @@ module.exports = {
     "no-loop-func": "off",
     "no-plusplus": "off",
     "prefer-template": "off",
+    "radix": "off",
   },
 };
