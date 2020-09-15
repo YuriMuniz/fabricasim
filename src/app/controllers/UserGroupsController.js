@@ -18,11 +18,20 @@ class UserGroupsController {
         });
 
         if (idUsers !== undefined) {
-            await UserGroups.destroy({
+            // await UserGroups.destroy({
+            //     where: {
+            //         group_id: idGroup,
+            //     },
+            // });
+
+            const userGroupOld = await UserGroups.findAll({
                 where: {
-                    group_id: idGroup,
-                },
-            });
+                    group_id: idGroup
+                }
+            })
+            for(const ug of userGroupOld){
+                ug.update({isActive: false});
+            }
 
             const userGroup = {
                 group_Id: idGroup,
@@ -32,8 +41,19 @@ class UserGroupsController {
             };
 
             await idUsers.forEach(async (user) => {
-                userGroup.userProfile_Id = user.id;
-                await UserGroups.create(userGroup);
+                const findUserGroup = await UserGroups.findOne({
+                    where: {
+                        userProfile_Id: user.id,
+                        group_id: idGroup,
+                    }
+                })
+                if(findUserGroup.length===0){
+                    userGroup.userProfile_Id = user.id;
+                    await UserGroups.create(userGroup);
+                }else{
+                    findUserGroup.update({isActive: true});
+                }
+
             });
 
             const groupCourses = await CourseGroups.findAll({
@@ -41,6 +61,7 @@ class UserGroupsController {
                     group_id: idGroup,
                 },
             });
+
             const idCourses = [];
 
             for (let x = 0; x < groupCourses.length; x++) {
@@ -48,26 +69,36 @@ class UserGroupsController {
                     id: groupCourses[x].course_id,
                 });
             }
-            // const oldCourses = groupCourses.filter((cg) =>
-            //     idCourses.includes(cg.course_id)
-            // );
+
 
             const oldUsers = oldUsersGroup.filter(
                 (ug) => !idUsers.includes(ug.userProfile_Id)
             );
 
-            await oldUsers.forEach(async (user) => {
-                await idCourses.forEach(async (course) => {
-                    await UserCourses.destroy({
-                        where: {
+            oldUsers.forEach(async (user) => {
+                idCourses.forEach(async (course) => {
+                    // await UserCourses.destroy({
+                    //     where: {
+                    //         userProfile_Id: user.userProfile_Id,
+                    //         course_id: course.id,
+                    //     },
+                    // });
+
+                    const userCourse = await UserCourses.findOne({
+                        where:{
                             userProfile_Id: user.userProfile_Id,
-                            course_id: course.id,
-                        },
-                    });
+                            course_id: course.id
+                        }
+                    })
+                    if(userCourse){
+                        await userCourse.update({isActive: false});
+                    }
+
+
                 });
             });
 
-            // console.log(idCourses);
+
             await idUsers.forEach(async (user) => {
                 const userCourse = {
                     course_Id: 0,
@@ -77,35 +108,114 @@ class UserGroupsController {
                     timestamp: Sequelize.fn('GETDATE'),
                 };
 
-                await idCourses.forEach(async (course) => {
-                    userCourse.course_Id = course.id;
-                    await UserCourses.create(userCourse);
-                });
+                const idCoursesNewUser = [];
+
+                try {
+                    const userGroups = await UserGroups.findAll({
+                        where: {
+                            userProfile_Id: user.id
+                        }
+                    })
+
+                    for (const userGroup of userGroups) {
+                        //console.log(userGroup.group_Id);
+                        const group = await Groups.findOne({
+                            where: {
+                                id: userGroup.group_Id
+                            }
+                        })
+                        console.log(group);
+                        if (group.groupDescription === 'New_Users_English' ||
+                            group.groupDescription === 'New_Users_Portuguese' ||
+                            group.groupDescription === 'New_Users_Spanish') {
+
+                            userGroup.update({ isActive: false });
+
+                            const coursesGroupNew = await CourseGroups.findAll({
+                                where: {
+                                    group_id: group.id
+                                }
+                            })
+
+                            for (const courseGroup of coursesGroupNew) {
+
+                                idCoursesNewUser.push({
+                                    id: courseGroup.id
+                                })
+
+                                const userCourseNewUser = await UserCourses.findOne({
+                                    where: {
+                                        course_id: courseGroup.course_id,
+                                        userProfile_id: user.id
+                                    }
+                                })
+
+                                if(userCourseNewUser){
+                                    await userCourseNewUser.update({ isActive: false });
+                                }
+
+                            }
+
+
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                    return res.status(401).json({ message: error });
+                }
+
+                try {
+                    const courseExistGroupNewUserAndNewGroup = idCourses.filter(
+                        (course) => idCoursesNewUser.includes(course)
+                    );
+
+                    for (const courseGroup of courseExistGroupNewUserAndNewGroup) {
+                        const userCourse = await UserCourses.findOne({
+                            where: {
+                                course_id: courseGroup.course_id,
+                                userProfileId: user.id
+                            }
+                        })
+
+                        if(userCourse){
+                            await userCourse.update({ isActive: true });
+                        }
+
+                    }
+
+                    const courseNotExistGroupNewUserAndNewGroup = idCourses.filter(
+                        (course) => !idCoursesNewUser.includes(course)
+                    );
+
+                    courseNotExistGroupNewUserAndNewGroup.forEach(async (course) => {
+                        const findUserCourse = await UserCourses.findAll({
+                            where: {
+                                userProfile_Id: user.id,
+                                course_id: course.id,
+                            }
+                        })
+
+                        if (findUserCourse.length === 0) {
+
+                            userCourse.course_Id = course.id;
+                            await UserCourses.create(userCourse);
+                        } else {
+                            await findUserCourse[0].update({ isActive: true });
+                        }
+
+                    });
+                } catch(err){
+                    console.log(error);
+                    return res.status(401).json({ message: error });
+                }
+
+
             });
         } else {
             return res
                 .status(400)
                 .json({ message: 'Bad request. User is required.' });
         }
-
-        // await idUsers.forEach(async (user) => {
-        //     const userGroups = await UserGroups.findAll({
-        //         where: {
-        //             userProfile_Id: user.id,
-        //             group_Id: idGroup,
-        //         },
-        //         attributes: ['id'],
-        //     });
-
-        //     console.log(userGroups);
-        //     await userGroups.forEach(async (ug) => {
-        //         await GroupRoleUserGroups.destroy({
-        //             where: {
-        //                 userGroup_Id: ug.id,
-        //             },
-        //         });
-        //     });
-        // });
 
         const userGroups = await UserGroups.findAll({
             where: {
@@ -115,7 +225,7 @@ class UserGroupsController {
         });
 
         console.log(userGroups);
-        await userGroups.forEach(async (ug) => {
+        userGroups.forEach(async (ug) => {
             await GroupRoleUserGroups.destroy({
                 where: {
                     userGroup_Id: ug.id,
@@ -127,29 +237,10 @@ class UserGroupsController {
             groupRole_Id: 3,
             userGroup_Id: 0,
         };
-        await userGroups.forEach(async (ug) => {
+        userGroups.forEach(async (ug) => {
             groupUserRole.userGroup_Id = ug.id;
             await GroupRoleUserGroups.create(groupUserRole);
         });
-
-        // await idUsers.forEach(async (user) => {
-        //     const userGroups = await UserGroups.findAll({
-        //         where: {
-        //             userProfile_Id: user.id,
-        //             group_Id: idGroup,
-        //         },
-        //         attributes: ['id'],
-        //     });
-
-        //     const groupUserRole = {
-        //         groupRole_Id: 3,
-        //         userGroup_Id: 0,
-        //     };
-        //     await userGroups.forEach(async (ug) => {
-        //         groupUserRole.userGroup_Id = ug.id;
-        //         await GroupRoleUserGroups.create(groupUserRole);
-        //     });
-        // });
 
         const group = await Groups.findOne({
             where: {
@@ -173,7 +264,7 @@ class UserGroupsController {
                 },
             ],
         });
-
+        console.log(group);
         return res.json(group);
     }
 
@@ -188,16 +279,12 @@ class UserGroupsController {
                 {
                     model: UserProfiles,
                     as: 'users',
-                    through: {
-                        attributes: [],
-                    },
+
                 },
                 {
                     model: Courses,
                     as: 'courses',
-                    through: {
-                        attributes: [],
-                    },
+
                 },
             ],
         });

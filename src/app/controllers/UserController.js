@@ -46,7 +46,7 @@ class UserController {
             }
         }
 
-        return res.status(200).json({ success: 'User has been registred.' });
+        return res.status(200).json(user.data[0]);
     }
 
     async update(req, res) {

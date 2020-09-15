@@ -23,6 +23,7 @@ class CourseGroupsController {
                 },
             });
 
+
             const courseGroup = {
                 group_id: idGroup,
                 course_id: 0,
@@ -36,6 +37,7 @@ class CourseGroupsController {
             const userGroup = await UserGroups.findAll({
                 where: {
                     group_id: idGroup,
+                    isActive: true,
                 },
             });
             const idUsers = [];
@@ -52,14 +54,25 @@ class CourseGroupsController {
 
             console.log(oldCourses);
 
-            await idUsers.forEach(async (user) => {
-                await oldCourses.forEach(async (course) => {
-                    await UserCourses.destroy({
-                        where: {
+            idUsers.forEach(async (user) => {
+                oldCourses.forEach(async (course) => {
+                    // await UserCourses.destroy({
+                    //     where: {
+                    //         userProfile_Id: user.id,
+                    //         course_id: course.course_id,
+                    //     },
+                    // });
+
+                    const userCourseUpdate = await UserCourses.findOne({
+                        where:{
                             userProfile_Id: user.id,
-                            course_id: course.course_id,
-                        },
-                    });
+                            course_id: course.course_id
+                        }
+                    })
+                    if(userCourseUpdate){
+                        await userCourseUpdate.update({isActive: false});
+                    }
+
                 });
 
                 const userCourse = {
@@ -71,8 +84,21 @@ class CourseGroupsController {
                 };
 
                 await idCourses.forEach(async (course) => {
-                    userCourse.course_Id = course.id;
-                    await UserCourses.create(userCourse);
+
+                    const findUserCourse = await UserCourses.findAll({
+                        where: {
+                            userProfile_Id: user.id,
+                            course_id: course.id,
+                        }
+                    })
+
+                    if(findUserCourse.length===0){
+                        userCourse.course_Id = course.id;
+                        await UserCourses.create(userCourse);
+                    }else{
+                        await findUserCourse[0].update({isActive: true});
+                    }
+
                 });
             });
         }
