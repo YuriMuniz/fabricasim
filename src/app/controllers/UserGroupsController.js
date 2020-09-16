@@ -24,13 +24,9 @@ class UserGroupsController {
             //     },
             // });
 
-            const userGroupOld = await UserGroups.findAll({
-                where: {
-                    group_id: idGroup
-                }
-            })
-            for(const ug of userGroupOld){
-                ug.update({isActive: false});
+
+            for(const ug of oldUsersGroup){
+                await ug.update({isActive: false});
             }
 
             const userGroup = {
@@ -40,21 +36,45 @@ class UserGroupsController {
                 timestamp: Sequelize.fn('GETDATE'),
             };
 
-            await idUsers.forEach(async (user) => {
+            for(const user of idUsers){
+                console.log('id:' +user.id);
                 const findUserGroup = await UserGroups.findOne({
                     where: {
                         userProfile_Id: user.id,
                         group_id: idGroup,
                     }
                 })
-                if(findUserGroup.length===0){
+
+                //console.log(findUserGroup.data.userProfile_Id);
+                if(findUserGroup===null || findUserGroup===undefined){
                     userGroup.userProfile_Id = user.id;
                     await UserGroups.create(userGroup);
                 }else{
-                    findUserGroup.update({isActive: true});
+                    console.log("chegou");
+                    await findUserGroup.update({isActive: true});
+                    console.log(findUserGroup);
                 }
+            }
 
-            });
+            // await idUsers.forEach(async (user) => {
+            //     console.log('id:' +user.id);
+            //     const findUserGroup = await UserGroups.findOne({
+            //         where: {
+            //             userProfile_Id: user.id,
+            //             group_id: idGroup,
+            //         }
+            //     })
+
+            //     //console.log(findUserGroup.data.userProfile_Id);
+            //     if(findUserGroup===null || findUserGroup===undefined){
+            //         userGroup.userProfile_Id = user.id;
+            //         await UserGroups.create(userGroup);
+            //     }else{
+            //         console.log("chegou");
+            //         await findUserGroup.update({isActive: true});
+            //     }
+
+            // });
 
             const groupCourses = await CourseGroups.findAll({
                 where: {
@@ -76,6 +96,19 @@ class UserGroupsController {
             );
 
             oldUsers.forEach(async (user) => {
+                // console.log(user.userProfile_Id);
+                // const findUserGroup = await UserGroups.findOne({
+                //     where: {
+                //         userProfile_Id: user.userProfile_Id,
+                //         group_id: idGroup,
+                //     }
+                // })
+
+                // //console.log(findUserGroup);
+                // if(findUserGroup!==null){
+                //     await findUserGroup.update({isActive: false});
+                // }
+
                 idCourses.forEach(async (course) => {
                     // await UserCourses.destroy({
                     //     where: {
@@ -124,7 +157,7 @@ class UserGroupsController {
                                 id: userGroup.group_Id
                             }
                         })
-                        console.log(group);
+                        //console.log(group);
                         if (group.groupDescription === 'New_Users_English' ||
                             group.groupDescription === 'New_Users_Portuguese' ||
                             group.groupDescription === 'New_Users_Spanish') {
@@ -160,7 +193,7 @@ class UserGroupsController {
                         }
                     }
                 } catch (error) {
-                    console.log(error);
+                    //console.log(error);
                     return res.status(401).json({ message: error });
                 }
 
@@ -195,7 +228,7 @@ class UserGroupsController {
                             }
                         })
 
-                        if (findUserCourse.length === 0) {
+                        if (findUserCourse.length === 0 ) {
 
                             userCourse.course_Id = course.id;
                             await UserCourses.create(userCourse);
@@ -205,7 +238,7 @@ class UserGroupsController {
 
                     });
                 } catch(err){
-                    console.log(error);
+                   // console.log(error);
                     return res.status(401).json({ message: error });
                 }
 
@@ -224,7 +257,7 @@ class UserGroupsController {
             attributes: ['id'],
         });
 
-        console.log(userGroups);
+        //console.log(userGroups);
         userGroups.forEach(async (ug) => {
             await GroupRoleUserGroups.destroy({
                 where: {
@@ -264,7 +297,7 @@ class UserGroupsController {
                 },
             ],
         });
-        console.log(group);
+        //console.log(group);
         return res.json(group);
     }
 
