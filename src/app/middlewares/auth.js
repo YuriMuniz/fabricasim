@@ -20,7 +20,7 @@ export default async (req, res, next) => {
         const decoded = await promisify(jwt.verify)(token, authConfig.secret);
 
         req.userId = decoded.id;
-        console.log(decoded);
+        // console.log(decoded);
 
         const user = await ApplicationUsers.findOne({
             where: {
