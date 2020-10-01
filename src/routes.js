@@ -69,11 +69,11 @@ routes.get(
     GroupController.index
 );
 
-routes.get(
-    '/get-embed',
-    authorize([roles.Super, roles.AdminMore, roles.Admin]),
-    PowerBiController.getEmbed
-);
+// routes.get(
+//     '/get-embed',
+//     authorize([roles.Super, roles.AdminMore, roles.Admin]),
+//     PowerBiController.getEmbed
+// );
 
 routes.put(
     '/group',
