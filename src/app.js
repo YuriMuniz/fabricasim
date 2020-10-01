@@ -14,11 +14,11 @@ class App {
     middlewares() {
         this.server.use(cors());
 
-        // this.server.use(
-        //     cors({
-        //         origin: 'https://portal.fabricasim.com',
-        //     })
-        // );
+        this.server.use(
+            cors({
+                origin: 'https://portal.fabricasim.com',
+            })
+        );
         this.server.use(express.json());
     }
 
