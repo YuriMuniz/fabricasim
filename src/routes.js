@@ -17,6 +17,7 @@ import CoursesController from './app/controllers/CoursesController';
 import GroupFilterController from './app/controllers/GroupFilterController';
 import GroupRoleUserGroupsController from './app/controllers/GroupRoleUserGroupsController';
 import FabricoinController from './app/controllers/FabricoinController';
+import PowerBiController from './app/controllers/PowerBiController';
 
 import UserProfilesController from './app/controllers/UserProfilesController';
 
@@ -66,6 +67,12 @@ routes.get(
     '/group',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     GroupController.index
+);
+
+routes.get(
+    '/get-embed',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    PowerBiController.getEmbed
 );
 
 routes.put(

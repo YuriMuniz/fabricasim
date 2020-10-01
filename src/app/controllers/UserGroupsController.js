@@ -24,9 +24,8 @@ class UserGroupsController {
             //     },
             // });
 
-
-            for(const ug of oldUsersGroup){
-                await ug.update({isActive: false});
+            for (const ug of oldUsersGroup) {
+                await ug.update({ isActive: false });
             }
 
             const userGroup = {
@@ -36,22 +35,22 @@ class UserGroupsController {
                 timestamp: Sequelize.fn('GETDATE'),
             };
 
-            for(const user of idUsers){
-                console.log('id:' +user.id);
+            for (const user of idUsers) {
+                console.log('id:' + user.id);
                 const findUserGroup = await UserGroups.findOne({
                     where: {
                         userProfile_Id: user.id,
                         group_id: idGroup,
-                    }
-                })
+                    },
+                });
 
-                //console.log(findUserGroup.data.userProfile_Id);
-                if(findUserGroup===null || findUserGroup===undefined){
+                // console.log(findUserGroup.data.userProfile_Id);
+                if (findUserGroup === null || findUserGroup === undefined) {
                     userGroup.userProfile_Id = user.id;
                     await UserGroups.create(userGroup);
-                }else{
-                    console.log("chegou");
-                    await findUserGroup.update({isActive: true});
+                } else {
+                    console.log('chegou');
+                    await findUserGroup.update({ isActive: true });
                     console.log(findUserGroup);
                 }
             }
@@ -90,7 +89,6 @@ class UserGroupsController {
                 });
             }
 
-
             const oldUsers = oldUsersGroup.filter(
                 (ug) => !idUsers.includes(ug.userProfile_Id)
             );
@@ -118,19 +116,16 @@ class UserGroupsController {
                     // });
 
                     const userCourse = await UserCourses.findOne({
-                        where:{
+                        where: {
                             userProfile_Id: user.userProfile_Id,
-                            course_id: course.id
-                        }
-                    })
-                    if(userCourse){
-                        await userCourse.update({isActive: false});
+                            course_id: course.id,
+                        },
+                    });
+                    if (userCourse) {
+                        await userCourse.update({ isActive: false });
                     }
-
-
                 });
             });
-
 
             await idUsers.forEach(async (user) => {
                 const userCourse = {
@@ -146,54 +141,55 @@ class UserGroupsController {
                 try {
                     const userGroups = await UserGroups.findAll({
                         where: {
-                            userProfile_Id: user.id
-                        }
-                    })
+                            userProfile_Id: user.id,
+                        },
+                    });
 
                     for (const userGroup of userGroups) {
-                        //console.log(userGroup.group_Id);
+                        // console.log(userGroup.group_Id);
                         const group = await Groups.findOne({
                             where: {
-                                id: userGroup.group_Id
-                            }
-                        })
-                        //console.log(group);
-                        if (group.groupDescription === 'New_Users_English' ||
+                                id: userGroup.group_Id,
+                            },
+                        });
+                        // console.log(group);
+                        if (
+                            group.groupDescription === 'New_Users_English' ||
                             group.groupDescription === 'New_Users_Portuguese' ||
-                            group.groupDescription === 'New_Users_Spanish') {
-
+                            group.groupDescription === 'New_Users_Spanish'
+                        ) {
                             userGroup.update({ isActive: false });
 
                             const coursesGroupNew = await CourseGroups.findAll({
                                 where: {
-                                    group_id: group.id
-                                }
-                            })
+                                    group_id: group.id,
+                                },
+                            });
 
                             for (const courseGroup of coursesGroupNew) {
-
                                 idCoursesNewUser.push({
-                                    id: courseGroup.id
-                                })
+                                    id: courseGroup.id,
+                                });
 
-                                const userCourseNewUser = await UserCourses.findOne({
-                                    where: {
-                                        course_id: courseGroup.course_id,
-                                        userProfile_id: user.id
+                                const userCourseNewUser = await UserCourses.findOne(
+                                    {
+                                        where: {
+                                            course_id: courseGroup.course_id,
+                                            userProfile_id: user.id,
+                                        },
                                     }
-                                })
+                                );
 
-                                if(userCourseNewUser){
-                                    await userCourseNewUser.update({ isActive: false });
+                                if (userCourseNewUser) {
+                                    await userCourseNewUser.update({
+                                        isActive: false,
+                                    });
                                 }
-
                             }
-
-
                         }
                     }
                 } catch (error) {
-                    //console.log(error);
+                    // console.log(error);
                     return res.status(401).json({ message: error });
                 }
 
@@ -206,43 +202,42 @@ class UserGroupsController {
                         const userCourse = await UserCourses.findOne({
                             where: {
                                 course_id: courseGroup.course_id,
-                                userProfileId: user.id
-                            }
-                        })
+                                userProfileId: user.id,
+                            },
+                        });
 
-                        if(userCourse){
+                        if (userCourse) {
                             await userCourse.update({ isActive: true });
                         }
-
                     }
 
                     const courseNotExistGroupNewUserAndNewGroup = idCourses.filter(
                         (course) => !idCoursesNewUser.includes(course)
                     );
 
-                    courseNotExistGroupNewUserAndNewGroup.forEach(async (course) => {
-                        const findUserCourse = await UserCourses.findAll({
-                            where: {
-                                userProfile_Id: user.id,
-                                course_id: course.id,
+                    courseNotExistGroupNewUserAndNewGroup.forEach(
+                        async (course) => {
+                            const findUserCourse = await UserCourses.findAll({
+                                where: {
+                                    userProfile_Id: user.id,
+                                    course_id: course.id,
+                                },
+                            });
+
+                            if (findUserCourse.length === 0) {
+                                userCourse.course_Id = course.id;
+                                await UserCourses.create(userCourse);
+                            } else {
+                                await findUserCourse[0].update({
+                                    isActive: true,
+                                });
                             }
-                        })
-
-                        if (findUserCourse.length === 0 ) {
-
-                            userCourse.course_Id = course.id;
-                            await UserCourses.create(userCourse);
-                        } else {
-                            await findUserCourse[0].update({ isActive: true });
                         }
-
-                    });
-                } catch(err){
-                   // console.log(error);
+                    );
+                } catch (err) {
+                    // console.log(error);
                     return res.status(401).json({ message: error });
                 }
-
-
             });
         } else {
             return res
@@ -257,7 +252,7 @@ class UserGroupsController {
             attributes: ['id'],
         });
 
-        //console.log(userGroups);
+        // console.log(userGroups);
         userGroups.forEach(async (ug) => {
             await GroupRoleUserGroups.destroy({
                 where: {
@@ -297,7 +292,7 @@ class UserGroupsController {
                 },
             ],
         });
-        //console.log(group);
+        // console.log(group);
         return res.json(group);
     }
 
@@ -312,12 +307,10 @@ class UserGroupsController {
                 {
                     model: UserProfiles,
                     as: 'users',
-
                 },
                 {
                     model: Courses,
                     as: 'courses',
-
                 },
             ],
         });

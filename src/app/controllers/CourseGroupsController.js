@@ -23,7 +23,6 @@ class CourseGroupsController {
                 },
             });
 
-
             const courseGroup = {
                 group_id: idGroup,
                 course_id: 0,
@@ -64,15 +63,14 @@ class CourseGroupsController {
                     // });
 
                     const userCourseUpdate = await UserCourses.findOne({
-                        where:{
+                        where: {
                             userProfile_Id: user.id,
-                            course_id: course.course_id
-                        }
-                    })
-                    if(userCourseUpdate){
-                        await userCourseUpdate.update({isActive: false});
+                            course_id: course.course_id,
+                        },
+                    });
+                    if (userCourseUpdate) {
+                        await userCourseUpdate.update({ isActive: false });
                     }
-
                 });
 
                 const userCourse = {
@@ -84,21 +82,19 @@ class CourseGroupsController {
                 };
 
                 await idCourses.forEach(async (course) => {
-
                     const findUserCourse = await UserCourses.findAll({
                         where: {
                             userProfile_Id: user.id,
                             course_id: course.id,
-                        }
-                    })
+                        },
+                    });
 
-                    if(findUserCourse.length===0){
+                    if (findUserCourse.length === 0) {
                         userCourse.course_Id = course.id;
                         await UserCourses.create(userCourse);
-                    }else{
-                        await findUserCourse[0].update({isActive: true});
+                    } else {
+                        await findUserCourse[0].update({ isActive: true });
                     }
-
                 });
             });
         }

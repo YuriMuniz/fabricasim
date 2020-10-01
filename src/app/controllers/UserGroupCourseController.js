@@ -70,56 +70,52 @@ class UserGroupCourseController {
         }
         const idCoursesNewUser = [];
 
-        try{
+        try {
             const userGroups = await UserGroups.findAll({
                 where: {
-                    userProfile_Id: user.userProfileId
-                }
-            })
+                    userProfile_Id: user.userProfileId,
+                },
+            });
 
             for (const userGroup of userGroups) {
-               //console.log(userGroup.group_Id);
+                // console.log(userGroup.group_Id);
                 const group = await Groups.findOne({
                     where: {
-                        id: userGroup.group_Id
-                    }
-                })
-                if (group.groupDescription === 'New_Users_English' ||
+                        id: userGroup.group_Id,
+                    },
+                });
+                if (
+                    group.groupDescription === 'New_Users_English' ||
                     group.groupDescription === 'New_Users_Portuguese' ||
-                    group.groupDescription === 'New_Users_Spanish') {
-
-                    userGroup.update({isActive: false});
+                    group.groupDescription === 'New_Users_Spanish'
+                ) {
+                    userGroup.update({ isActive: false });
 
                     const coursesGroupNew = await CourseGroups.findAll({
                         where: {
-                            group_id: group.id
-                        }
-                    })
+                            group_id: group.id,
+                        },
+                    });
 
-                    for(const courseGroup of coursesGroupNew){
-
+                    for (const courseGroup of coursesGroupNew) {
                         idCoursesNewUser.push({
-                            id: courseGroup.id
-                        })
+                            id: courseGroup.id,
+                        });
 
                         const userCourseNewUser = await UserCourses.findOne({
                             where: {
                                 course_id: courseGroup.course_id,
-                                userProfile_id: user.userProfileId
-                            }
-                        })
+                                userProfile_id: user.userProfileId,
+                            },
+                        });
 
-                        if(userCourseNewUser){
-                            await userCourseNewUser.update({isActive: false});
+                        if (userCourseNewUser) {
+                            await userCourseNewUser.update({ isActive: false });
                         }
-
-
                     }
-
-
                 }
             }
-        }catch(error){
+        } catch (error) {
             console.log(error);
             return res.status(401).json({ message: error });
         }
@@ -151,18 +147,17 @@ class UserGroupCourseController {
                 (course) => idCoursesNewUser.includes(course)
             );
 
-            for(const courseGroup of courseExistGroupNewUserAndNewGroup){
+            for (const courseGroup of courseExistGroupNewUserAndNewGroup) {
                 const userCourse = await UserCourses.findOne({
                     where: {
                         course_id: courseGroup.course_id,
-                        userProfileId: user.userProfileId
-                    }
-                })
+                        userProfileId: user.userProfileId,
+                    },
+                });
 
-                if(userCourse){
-                    await userCourse.update({isActive: true});
+                if (userCourse) {
+                    await userCourse.update({ isActive: true });
                 }
-
             }
 
             const courseNotExistGroupNewUserAndNewGroup = idCourses.filter(
@@ -174,20 +169,16 @@ class UserGroupCourseController {
                     where: {
                         userProfile_Id: user.userProfileId,
                         course_id: course.id,
-                    }
-                })
+                    },
+                });
 
-                if(findUserCourse.length===0){
+                if (findUserCourse.length === 0) {
                     userCourse.course_Id = course.id;
                     await UserCourses.create(userCourse);
-                }else{
-                    if(findUserCourse.length>0){
-                        await findUserCourse[0].update({isActive:true});
-                    }
+                } else if (findUserCourse.length > 0) {
+                    await findUserCourse[0].update({ isActive: true });
                 }
-
             });
-
         } catch (err) {
             console.log(err);
             return res.status(401).json({ message: err });
