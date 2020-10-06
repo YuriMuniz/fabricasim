@@ -196,6 +196,18 @@ class GroupController {
 
         return res.json(group);
     }
+
+    async findByOwner(req, res) {
+        const { id } = req.query;
+        const groups = await Groups.findAll({
+            where: {
+                groupOwner_Id: id,
+                isActive: true,
+            },
+        });
+
+        return res.json(groups);
+    }
 }
 
 export default new GroupController();

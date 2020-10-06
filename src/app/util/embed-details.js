@@ -20,7 +20,7 @@ export default async function getReportEmbedDetails(
         method: 'GET',
         headers,
     });
-    console.log(result);
+
     if (!result.ok) throw result;
     return result.json();
 }

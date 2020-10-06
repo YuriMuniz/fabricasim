@@ -71,7 +71,7 @@ routes.get(
 
 routes.get(
     '/get-embed',
-    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    authorize([roles.Super, roles.AdminMore, roles.Admin, roles.Teacher], true),
     PowerBiController.getEmbed
 );
 
@@ -109,6 +109,18 @@ routes.post(
     '/user-group-course',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     UserGroupCourseController.store
+);
+
+routes.get(
+    '/user-group-by-user',
+    authorize([roles.Super, roles.AdminMore, roles.Admin, roles.Teacher]),
+    UserGroupsController.findByUser
+);
+
+routes.get(
+    '/groups-by-owner',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    GroupController.findByOwner
 );
 
 routes.get(

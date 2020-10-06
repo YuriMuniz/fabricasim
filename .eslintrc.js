@@ -28,5 +28,6 @@ module.exports = {
     "no-plusplus": "off",
     "prefer-template": "off",
     "radix": "off",
+    "no-await-in-loop": "off",
   },
 };

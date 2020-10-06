@@ -8,6 +8,17 @@ import Courses from '../models/Courses';
 import GroupRoleUserGroups from '../models/GroupRoleUserGroups';
 
 class UserGroupsController {
+    async findByUser(req, res) {
+        const { id } = req.query;
+        const userGroups = await UserGroups.findAll({
+            where: {
+                userProfile_Id: id,
+                isActive: true,
+            },
+        });
+        return res.json(userGroups);
+    }
+
     async store(req, res) {
         const { idGroup, idUsers } = req.body;
 
