@@ -71,7 +71,13 @@ routes.get(
 
 routes.get(
     '/get-embed',
-    authorize([roles.Super, roles.AdminMore, roles.Admin, roles.Teacher], true),
+    authorize([
+        roles.Super,
+        roles.AdminMore,
+        roles.Admin,
+        roles.Teacher,
+        roles.Student,
+    ]),
     PowerBiController.getEmbed
 );
 
