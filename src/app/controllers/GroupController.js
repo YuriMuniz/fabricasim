@@ -116,6 +116,14 @@ class GroupController {
         const groupOwner_Id = req.userId;
         const isActive = true;
         // const timestamp = new Date();
+        const existGroup = await Groups.findAll({
+            where: {
+                GroupDescription: groupDescription,
+            },
+        });
+        if (existGroup.length > 0) {
+            return res.status(403).json({ message: 'Group exist' });
+        }
         const g = {
             groupDescription,
             groupResume,

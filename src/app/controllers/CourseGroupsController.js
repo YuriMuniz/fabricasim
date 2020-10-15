@@ -51,17 +51,8 @@ class CourseGroupsController {
                 (cg) => !idCourses.includes(cg.course_id)
             );
 
-            console.log(oldCourses);
-
-            idUsers.forEach(async (user) => {
-                oldCourses.forEach(async (course) => {
-                    // await UserCourses.destroy({
-                    //     where: {
-                    //         userProfile_Id: user.id,
-                    //         course_id: course.course_id,
-                    //     },
-                    // });
-
+            for (const user of idUsers) {
+                for (const course of oldCourses) {
                     const userCourseUpdate = await UserCourses.findOne({
                         where: {
                             userProfile_Id: user.id,
@@ -71,7 +62,25 @@ class CourseGroupsController {
                     if (userCourseUpdate) {
                         await userCourseUpdate.update({ isActive: false });
                     }
-                });
+                }
+                // oldCourses.forEach(async (course) => {
+                //     // await UserCourses.destroy({
+                //     //     where: {
+                //     //         userProfile_Id: user.id,
+                //     //         course_id: course.course_id,
+                //     //     },
+                //     // });
+
+                //     const userCourseUpdate = await UserCourses.findOne({
+                //         where: {
+                //             userProfile_Id: user.id,
+                //             course_id: course.course_id,
+                //         },
+                //     });
+                //     if (userCourseUpdate) {
+                //         await userCourseUpdate.update({ isActive: false });
+                //     }
+                // });
 
                 const userCourse = {
                     course_Id: 0,
@@ -81,22 +90,101 @@ class CourseGroupsController {
                     timestamp: Sequelize.fn('GETDATE'),
                 };
 
-                await idCourses.forEach(async (course) => {
-                    const findUserCourse = await UserCourses.findAll({
+                for (const course of idCourses) {
+                    const findUserCourse = await UserCourses.findOne({
                         where: {
                             userProfile_Id: user.id,
                             course_id: course.id,
                         },
                     });
 
-                    if (findUserCourse.length === 0) {
+                    if (!findUserCourse) {
                         userCourse.course_Id = course.id;
                         await UserCourses.create(userCourse);
                     } else {
-                        await findUserCourse[0].update({ isActive: true });
+                        console.log(course.id);
+                        await findUserCourse.update({ isActive: true });
                     }
-                });
-            });
+                }
+
+                // await idCourses.forEach(async (course) => {
+                //     const findUserCourse = await UserCourses.findAll({
+                //         where: {
+                //             userProfile_Id: user.id,
+                //             course_id: course.id,
+                //         },
+                //     });
+
+                //     if (findUserCourse.length === 0) {
+                //         userCourse.course_Id = course.id;
+                //         await UserCourses.create(userCourse);
+                //     } else {
+                //         await findUserCourse[0].update({ isActive: true });
+                //     }
+                // });
+            }
+
+            // idUsers.forEach(async (user) => {
+            //     oldCourses.forEach(async (course) => {
+            //         // await UserCourses.destroy({
+            //         //     where: {
+            //         //         userProfile_Id: user.id,
+            //         //         course_id: course.course_id,
+            //         //     },
+            //         // });
+
+            //         const userCourseUpdate = await UserCourses.findOne({
+            //             where: {
+            //                 userProfile_Id: user.id,
+            //                 course_id: course.course_id,
+            //             },
+            //         });
+            //         if (userCourseUpdate) {
+            //             await userCourseUpdate.update({ isActive: false });
+            //         }
+            //     });
+
+            //     const userCourse = {
+            //         course_Id: 0,
+            //         userProfile_Id: user.id,
+            //         isActive: true,
+            //         wasAccepted: true,
+            //         timestamp: Sequelize.fn('GETDATE'),
+            //     };
+
+            //     for (const course of idCourses) {
+            //         const findUserCourse = await UserCourses.findOne({
+            //             where: {
+            //                 userProfile_Id: user.id,
+            //                 course_id: course.id,
+            //             },
+            //         });
+
+            //         if (!findUserCourse) {
+            //             userCourse.course_Id = course.id;
+            //             await UserCourses.create(userCourse);
+            //         } else {
+            //             console.log(course.id);
+            //             await findUserCourse.update({ isActive: true });
+            //         }
+            //     }
+
+            //     // await idCourses.forEach(async (course) => {
+            //     //     const findUserCourse = await UserCourses.findAll({
+            //     //         where: {
+            //     //             userProfile_Id: user.id,
+            //     //             course_id: course.id,
+            //     //         },
+            //     //     });
+
+            //     //     if (findUserCourse.length === 0) {
+            //     //         userCourse.course_Id = course.id;
+            //     //         await UserCourses.create(userCourse);
+            //     //     } else {
+            //     //         await findUserCourse[0].update({ isActive: true });
+            //     //     }
+            //     // });
+            // });
         }
 
         const group = await Groups.findOne({
