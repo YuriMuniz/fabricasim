@@ -38,9 +38,29 @@ class UserGroupsController {
             },
         });
         if (userGroups) {
-            return res
-                .status(403)
-                .json({ message: 'User already exists in the group.' });
+            if (userGroups.isActive) {
+                return res
+                    .status(403)
+                    .json({ message: 'User already exists in the group.' });
+            }
+            userGroups.update({ isActive: true });
+            const groupCourses = await CourseGroups.findAll({
+                where: {
+                    group_id: idGroup,
+                },
+            });
+            for (let x = 0; x < groupCourses.length; x++) {
+                const userCourses = await UserCourses.findOne({
+                    where: {
+                        course_Id: groupCourses[x].course_id,
+                        userProfile_Id: user.id,
+                    },
+                });
+                if (userCourses) {
+                    userCourses.update({ isActive: true });
+                }
+            }
+            return res.json({ message: 'Success.' });
         }
 
         const groupCourses = await CourseGroups.findAll({
