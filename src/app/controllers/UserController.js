@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import * as Yup from 'yup';
 import UserProfiles from '../models/UserProfiles';
+import ApplicationUsers from '../models/ApplicationUsers';
 
 class UserController {
     async store(req, res) {
@@ -46,7 +47,19 @@ class UserController {
             }
         }
 
-        return res.status(200).json(user.data[0]);
+        const userApp = await ApplicationUsers.findOne({
+            where: {
+                email,
+            },
+        });
+        // console.log(userApp);
+        const newUser = await UserProfiles.findOne({
+            where: {
+                id: userApp.userProfileId,
+            },
+        });
+
+        return res.status(200).json(newUser);
     }
 
     async update(req, res) {
