@@ -31,6 +31,18 @@ class UserGroupsController {
             return res.status(403).json({ message: 'User not exist' });
         }
 
+        const userGroups = await UserGroups.findOne({
+            where: {
+                group_Id: idGroup,
+                userProfile_Id: userId,
+            },
+        });
+        if (userGroups) {
+            return res
+                .status(403)
+                .json({ message: 'User already exists in the group.' });
+        }
+
         const groupCourses = await CourseGroups.findAll({
             where: {
                 group_id: idGroup,
@@ -57,11 +69,19 @@ class UserGroupsController {
         };
 
         for (let x = 0; x < groupCourses.length; x++) {
-            try {
-                userCourse.course_Id = groupCourses[x].course_id;
-                await UserCourses.create(userCourse);
-            } catch (error) {
-                return res.json(error);
+            const userCourses = await UserCourses.findOne({
+                where: {
+                    course_Id: groupCourses[x].course_id,
+                    userProfile_Id: user.id,
+                },
+            });
+            if (!userCourses) {
+                try {
+                    userCourse.course_Id = groupCourses[x].course_id;
+                    await UserCourses.create(userCourse);
+                } catch (error) {
+                    return res.json(error);
+                }
             }
         }
 
