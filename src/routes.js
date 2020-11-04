@@ -81,6 +81,12 @@ routes.get(
     PowerBiController.getEmbed
 );
 
+routes.post(
+    '/suspend-capacity',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    PowerBiController.suspend
+);
+
 routes.put(
     '/group',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
@@ -91,6 +97,11 @@ routes.post(
     '/user-group',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     UserGroupsController.store
+);
+routes.post(
+    '/add-one-user-group',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    UserGroupsController.addOneUser
 );
 
 routes.get(

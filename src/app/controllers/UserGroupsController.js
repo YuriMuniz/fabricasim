@@ -19,6 +19,55 @@ class UserGroupsController {
         return res.json(userGroups);
     }
 
+    async addOneUser(req, res) {
+        const { idGroup, userId } = req.body;
+
+        const user = await UserProfiles.findOne({
+            where: {
+                id: userId,
+            },
+        });
+        if (!user) {
+            return res.status(403).json({ message: 'User not exist' });
+        }
+
+        const groupCourses = await CourseGroups.findAll({
+            where: {
+                group_id: idGroup,
+            },
+        });
+        try {
+            const userGroup = {
+                group_Id: idGroup,
+                userProfile_Id: userId,
+                isActive: true,
+                timestamp: Sequelize.fn('GETDATE'),
+            };
+            await UserGroups.create(userGroup);
+        } catch (error) {
+            return res.json(error);
+        }
+
+        const userCourse = {
+            course_Id: 0,
+            userProfile_Id: user.id,
+            isActive: true,
+            wasAccepted: true,
+            timestamp: Sequelize.fn('GETDATE'),
+        };
+
+        for (let x = 0; x < groupCourses.length; x++) {
+            try {
+                userCourse.course_Id = groupCourses[x].course_id;
+                await UserCourses.create(userCourse);
+            } catch (error) {
+                return res.json(error);
+            }
+        }
+
+        return res.json({ message: 'Success' });
+    }
+
     async store(req, res) {
         const { idGroup, idUsers } = req.body;
 

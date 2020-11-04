@@ -1,6 +1,9 @@
 import Auth from '../util/auth-powerbi';
+import AuthNew from '../util/auth-new-powerbi';
 import getReportEmbedToken from '../util/embed';
 import getReportEmbedDetails from '../util/embed-details';
+
+const fetch = require('node-fetch');
 
 class PowerBiController {
     async getEmbed(req, res) {
@@ -31,6 +34,29 @@ class PowerBiController {
             return {
                 status: err.status,
             };
+        }
+    }
+
+    async suspend(req, res) {
+        const tokenResponse = await AuthNew.getAuthenticationToken();
+
+        console.log(tokenResponse);
+
+        const reportUrl =
+            'https://management.azure.com/subscriptions/58c1e6fd-4dcd-4da5-91a1-162d375cb7f2/resourceGroups/pbi-embedded/providers/Microsoft.PowerBIDedicated/capacities/fabrikasim/suspend?api-version=2017-10-01';
+        const headers = {
+            Authorization: 'Bearer ' + tokenResponse.accessToken,
+        };
+
+        // Used node-fetch to call the PowerBI REST API
+        try {
+            const result = await fetch(reportUrl, {
+                method: 'POST',
+                headers,
+            });
+            return res.json(result);
+        } catch (error) {
+            return res.json(error);
         }
     }
 }
