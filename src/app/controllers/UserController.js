@@ -41,9 +41,16 @@ class UserController {
             });
         if (user.data !== '') {
             if (user.data[0] === `Name ${email} is already taken.`) {
-                return res
-                    .status(400)
-                    .json({ error: `Name ${email} is already taken.` });
+                const u = await ApplicationUsers.findOne({
+                    where: {
+                        email,
+                    },
+                });
+
+                return res.status(400).json({
+                    error: `Name ${email} is already taken.`,
+                    id: u.userProfileId,
+                });
             }
         }
 
