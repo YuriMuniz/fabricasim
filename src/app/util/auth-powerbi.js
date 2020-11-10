@@ -10,9 +10,9 @@ const getAuthenticationToken = async function () {
     const authorityUrl = process.env.PBI_AUTHORITY_URL;
 
     const scope = process.env.PBI_SCOPE;
-    const username = process.env.PBI_USERNAME;
-    const password = process.env.PBI_PASSWORD;
-    const clientId = process.env.PBI_CLIENT_ID;
+    const username = process.env.PBI_NEW_USERNAME;
+    const password = process.env.PBI_NEW_PASSWORD;
+    const clientId = process.env.PBI_NEW_CLIENT_ID;
     const context = new AuthenticationContext(authorityUrl);
 
     return new Promise((resolve, reject) => {

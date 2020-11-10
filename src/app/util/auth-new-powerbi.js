@@ -7,9 +7,9 @@ const getAuthenticationToken = async function () {
 
     // Create a config variable that store credentials from config.json
 
-    const authorityUrl = process.env.PBI_AUTHORITY_URL;
+    const authorityUrl = process.env.PBI_NEW_AUTHORITY_URL;
 
-    const scope = process.env.PBI_SCOPE;
+    const scope = process.env.PBI_NEW_SCOPE;
     const username = process.env.PBI_NEW_USERNAME;
     const password = process.env.PBI_NEW_PASSWORD;
     const clientId = process.env.PBI_NEW_CLIENT_ID;

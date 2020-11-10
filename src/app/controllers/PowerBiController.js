@@ -8,8 +8,8 @@ const fetch = require('node-fetch');
 class PowerBiController {
     async getEmbed(req, res) {
         const tokenResponse = await Auth.getAuthenticationToken();
-        const workspaceId = process.env.PBI_WORKSPACE_ID;
-        const reportId = process.env.PBI_REPORT_ID;
+        const workspaceId = process.env.PBI_NEW_WORKSPACE_ID;
+        const reportId = process.env.PBI_NEW_REPORT_ID;
         let embedData = null;
 
         // Call the function to get the Report Embed details
@@ -40,23 +40,21 @@ class PowerBiController {
     async suspend(req, res) {
         const tokenResponse = await AuthNew.getAuthenticationToken();
 
-        console.log(tokenResponse);
-
         const reportUrl =
-            'https://management.azure.com/subscriptions/58c1e6fd-4dcd-4da5-91a1-162d375cb7f2/resourceGroups/pbi-embedded/providers/Microsoft.PowerBIDedicated/capacities/fabrikasim/suspend?api-version=2017-10-01';
+            'https://management.azure.com/subscriptions/f0e3c6a3-9e93-4410-9764-600fba68b7a1/resourceGroups/powerbiresourcegroup/providers/Microsoft.PowerBIDedicated/capacities/fabricasimpowerbi/resume?api-version=2017-10-01';
         const headers = {
             Authorization: 'Bearer ' + tokenResponse.accessToken,
         };
 
-        // Used node-fetch to call the PowerBI REST API
         try {
+            console.log(tokenResponse.accessToken);
             const result = await fetch(reportUrl, {
                 method: 'POST',
                 headers,
             });
             return res.json(result);
         } catch (error) {
-            return res.json(error);
+            return res.status(401).json(error);
         }
     }
 }
