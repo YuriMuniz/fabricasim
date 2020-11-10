@@ -41,6 +41,27 @@ class PowerBiController {
         const tokenResponse = await AuthNew.getAuthenticationToken();
 
         const reportUrl =
+            'https://management.azure.com/subscriptions/f0e3c6a3-9e93-4410-9764-600fba68b7a1/resourceGroups/powerbiresourcegroup/providers/Microsoft.PowerBIDedicated/capacities/fabricasimpowerbi/suspend?api-version=2017-10-01';
+        const headers = {
+            Authorization: 'Bearer ' + tokenResponse.accessToken,
+        };
+
+        try {
+            console.log(tokenResponse.accessToken);
+            const result = await fetch(reportUrl, {
+                method: 'POST',
+                headers,
+            });
+            return res.json(result);
+        } catch (error) {
+            return res.status(401).json(error);
+        }
+    }
+
+    async resume(req, res) {
+        const tokenResponse = await AuthNew.getAuthenticationToken();
+
+        const reportUrl =
             'https://management.azure.com/subscriptions/f0e3c6a3-9e93-4410-9764-600fba68b7a1/resourceGroups/powerbiresourcegroup/providers/Microsoft.PowerBIDedicated/capacities/fabricasimpowerbi/resume?api-version=2017-10-01';
         const headers = {
             Authorization: 'Bearer ' + tokenResponse.accessToken,

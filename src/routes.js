@@ -82,9 +82,14 @@ routes.get(
 );
 
 routes.post(
-    '/suspend-capacity',
+    '/porwerbi/suspend',
     authorize([roles.Super, roles.AdminMore, roles.Admin]),
     PowerBiController.suspend
+);
+routes.post(
+    '/porwerbi/resume',
+    authorize([roles.Super, roles.AdminMore, roles.Admin]),
+    PowerBiController.resume
 );
 
 routes.put(
